@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { navigate } from '../navigation';
-
+import { CommonActions } from '@react-navigation/native';
 // Create User Context
 const UserContext = createContext();
 
@@ -48,14 +48,21 @@ export const UserProvider = ({ children }) => {
   };
 
   // Logout Function
-  const logoutUser = async () => {
+  const logoutUser = async (navigation) => {
     try {
       // Clear user data and token from AsyncStorage
       await AsyncStorage.removeItem('userData');
       await AsyncStorage.removeItem('authToken');
       setUser(null);
       setToken(null);
-      navigate("Login", null); // Redirect to Login
+
+      // Reset the navigation stack and redirect to Login
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: 'Login' }],
+        })
+      );
     } catch (error) {
       console.error('Failed to clear user data:', error);
     }

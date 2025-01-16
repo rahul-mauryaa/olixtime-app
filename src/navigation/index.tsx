@@ -1,8 +1,8 @@
 import React, { FunctionComponent, useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import {  NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from "@react-navigation/drawer";
-import { View, ActivityIndicator, Image, Text, StyleSheet, TouchableOpacity, Dimensions, Animated, Easing } from "react-native";
+import { View, ActivityIndicator, Image, Text, StyleSheet, TouchableOpacity, Dimensions } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import LinearGradient from "react-native-linear-gradient";
 
@@ -37,32 +37,18 @@ export function navigate(name: string, params: any) {
 // Custom Drawer Content
 const CustomDrawerContent = (props: any) => {
   const { user, logoutUser } = useUser();
-  const spinValue = new Animated.Value(0);
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.timing(spinValue, {
-        toValue: 1,
-        duration: 3000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, []);
-
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
+  const handleLogout = () => {
+    logoutUser(props.navigation);
+  };
 
   return (
     <LinearGradient colors={['#1c1c2c', '#2c2c3c']} style={styles.drawerContainer}>
       <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContainer}>
         {/* Drawer Header */}
         <View style={styles.drawerHeader}>
-          <Animated.Image
+          <Image
             source={user?.previewUrl ? { uri: user.previewUrl } : require("../assets/user-profile.jpg")}
-            style={[styles.profileImage, { transform: [{ rotate: spin }] }]}
+            style={[styles.profileImage]}
           />
           <Text style={styles.userName}>{user?.username || "Guest"}</Text>
           <Text style={styles.userEmail}>{user?.email || "guest@example.com"}</Text>
@@ -74,10 +60,7 @@ const CustomDrawerContent = (props: any) => {
         {/* Custom Logout Button */}
         <DrawerItem
           label="Logout"
-          onPress={() => {
-            logoutUser();
-            navigate("Login", {});
-          }}
+          onPress={() => handleLogout()}
           icon={({ color, size }) => <Icon name="log-out-outline" color={color} size={size} />}
           labelStyle={styles.drawerLabel}
           style={styles.logoutButton}
@@ -95,31 +78,13 @@ const CustomDrawerContent = (props: any) => {
 
 
 const CustomHeader = ({ navigation, route }: any) => {
-  const spinValue = new Animated.Value(0);
-
-  React.useEffect(() => {
-    Animated.loop(
-      Animated.timing(spinValue, {
-        toValue: 1,
-        duration: 3000,
-        easing: Easing.linear,
-        useNativeDriver: true,
-      })
-    ).start();
-  }, []);
-
-  const spin = spinValue.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  });
-
   return (
     <LinearGradient colors={['#1c1c2c', '#2c2c3c']} style={styles.headerContainer}>
       <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={styles.menuButton}>
         <Icon name="menu-outline" size={30} color="#fff" />
       </TouchableOpacity>
       <View style={styles.headerTitleContainer}>
-        <Animated.Image
+        <Image
           source={require("../assets/logo.png")} // Replace with your logo
           style={[styles.logo]}
         />
